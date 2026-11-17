@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Assessment Showdown</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap">
+<style>
+:root{--bg:#f1f4fa;--surface:#fff;--ink:#18203a;--muted:#5d6784;--line:#d9dfee;--accent:#4338ca;--accent-ink:#fff;--ok:#157a3d;--ok-bg:#dcf5e5;--bad:#b42318;--bad-bg:#fde4e1;--boss:#8a5a00;--boss-bg:#fff0cc;--gold:#e0a800;--silver:#9aa4b8;--bronze:#b9703a;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1426;--surface:#192038;--ink:#eef1fb;--muted:#a1abc9;--line:#2b3556;--accent:#8b87ff;--accent-ink:#0f1426;--ok:#6fe39b;--ok-bg:#12382339;--bad:#ff8f84;--bad-bg:#47191566;--boss:#ffd166;--boss-bg:#3d2f0b}}
+:root[data-theme="dark"]{--bg:#0f1426;--surface:#192038;--ink:#eef1fb;--muted:#a1abc9;--line:#2b3556;--accent:#8b87ff;--accent-ink:#0f1426;--ok:#6fe39b;--ok-bg:#12382339;--bad:#ff8f84;--bad-bg:#47191566;--boss:#ffd166;--boss-bg:#3d2f0b}
+html{scroll-padding-top:env(safe-area-inset-top,0px);color-scheme:light dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",sans-serif;min-height:100vh}
+main{max-width:980px;margin:0 auto;padding:24px 16px 48px}
+h1{font-size:clamp(1.9rem,5vw,2.8rem);line-height:1.1;margin:0 0 6px;font-weight:800;letter-spacing:-.02em}
+h2{margin:0 0 12px;font-size:1.15rem}
+.sub{color:var(--muted);margin:0 0 24px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px}
+button{font:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.btn{background:var(--accent);color:var(--accent-ink);border:0;border-radius:10px;padding:12px 20px;font-weight:600}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.ghost{background:transparent;color:var(--muted);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+.row{display:flex;gap:8px}
+input[type=text]{flex:1;min-width:0;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:11px 14px}
+.plist{list-style:none;padding:0;margin:16px 0;display:grid;gap:8px}
+.plist li{display:flex;justify-content:space-between;align-items:center;border:1px solid var(--line);border-left:8px solid var(--c,var(--line));border-radius:10px;padding:8px 8px 8px 14px}
+.hint{color:var(--muted);font-size:.9rem;margin:8px 0 0;min-height:1.4em}
+.game{display:grid;grid-template-columns:1fr 260px;gap:16px;align-items:start}
+@media (max-width:760px){.game{grid-template-columns:1fr}.side{order:-1}}
+.turn{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.chip{display:inline-block;border-radius:99px;padding:4px 12px;font-size:.88rem;font-weight:600;background:var(--bg);border:1px solid var(--line)}
+.chip.boss{background:var(--boss-bg);color:var(--boss);border-color:var(--boss)}
+.chip.low{background:var(--bad-bg);color:var(--bad);border-color:var(--bad)}
+#timer{font-variant-numeric:tabular-nums}
+.bar{height:6px;background:var(--line);border-radius:9px;overflow:hidden;margin-bottom:18px}
+.bar i{display:block;height:100%;background:var(--accent);transition:width .3s}
+.q{font-size:clamp(1.15rem,3vw,1.45rem);font-weight:600;line-height:1.3;margin:0 0 16px}
+.opts{display:grid;gap:10px}
+.opt{display:flex;gap:12px;text-align:left;width:100%;background:var(--surface);color:var(--ink);border:2px solid var(--line);border-radius:12px;padding:12px 14px}
+.opt b{flex:none;width:1.6em;height:1.6em;border-radius:50%;background:var(--bg);display:grid;place-items:center;font-size:.85rem}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt:disabled{cursor:default}
+.opt.ok{background:var(--ok-bg);border-color:var(--ok);color:var(--ok)}
+.opt.bad{background:var(--bad-bg);border-color:var(--bad);color:var(--bad)}
+.fb{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:16px;min-height:44px}
+.fb p{margin:0;font-weight:600}
+.score{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.score li{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 12px;border-radius:10px;border:2px solid transparent;border-left:8px solid var(--c);background:color-mix(in srgb,var(--c) 16%,var(--surface))}
+.sc{background:var(--c);color:#101528;border-radius:99px;padding:1px 12px;font-weight:800}
+.score li.active{border-color:var(--ink);border-left-color:var(--c);font-weight:800}
+.score li.pop{animation:pop .5s}
+@keyframes pop{40%{background:var(--ok-bg)}}
+.podium{display:flex;align-items:flex-end;justify-content:center;gap:10px;margin:28px 0 24px;min-height:260px}
+.step{flex:1;max-width:200px;text-align:center}
+.step .name{font-weight:800;overflow-wrap:anywhere}
+.step .pts{color:var(--muted);margin-bottom:6px}
+.block{border-radius:12px 12px 0 0;display:grid;place-items:center;font-size:2rem;font-weight:800;color:#18203a}
+.p1 .block{height:170px;background:var(--gold)}.p2 .block{height:120px;background:var(--silver)}.p3 .block{height:84px;background:var(--bronze)}
+.rest{color:var(--muted);text-align:center;margin:0 0 20px}
+.center{text-align:center}
+.hidden{display:none}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<main>
+<section id="setup">
+  <h1>Assessment Showdown</h1>
+  <p class="sub">29 questions on assessment criteria, rubrics, validity, reliability and feedback. Regular questions are worth 20 points; the four Boss Level questions at the end are worth 100 each. At least 6 players or teams are needed to start. The whole game has a 6-minute time limit.</p>
+  <div class="card">
+    <h2>Players or teams</h2>
+    <div class="row">
+      <input type="text" id="pname" maxlength="24" placeholder="Enter a name" aria-label="Player or team name">
+      <button class="btn" id="add">Add</button>
+    </div>
+    <p class="hint" id="hint"></p>
+    <ul class="plist" id="plist"></ul>
+    <button class="btn" id="start">Start game</button>
+  </div>
+</section>
+
+<section id="play" class="hidden">
+  <div class="game">
+    <div class="card">
+      <div class="turn">
+        <span class="chip" id="qnum"></span>
+        <span class="chip" id="pts"></span>
+        <span class="chip" id="timer" role="timer">Time 6:00</span>
+      </div>
+      <div class="bar"><i id="prog"></i></div>
+      <p class="chip" id="who" style="font-size:1rem"></p>
+      <p class="q" id="qtext"></p>
+      <div class="opts" id="opts"></div>
+      <div class="fb"><p id="msg" aria-live="polite"></p><button class="btn hidden" id="next">Next question</button></div>
+    </div>
+    <aside class="card side">
+      <h2>Scoreboard</h2>
+      <ul class="score" id="score"></ul>
+    </aside>
+  </div>
+</section>
+
+<section id="end" class="hidden center">
+  <h1>Final results</h1>
+  <div class="podium" id="podium"></div>
+  <p class="rest" id="rest"></p>
+  <button class="btn" id="again">Play again</button>
+</section>
+</main>
+
+<script>
+const Q=[
+["What is the main purpose of an assessment rubric?",["To make the test harder for students","To clearly show grading expectations and levels of performance","To replace the teacher in the classroom","To hide grading rules until the end"],1],
+["Which of the following is an assessment “criterion” for a speaking test?",["The color of the student’s shirt","Pronunciation and fluency","The time of day the test happens","The size of the classroom"],1],
+["What does “Validity” mean in language testing?",["The test is printed on expensive paper","Every student passes the test easily","The test actually measures what it is supposed to measure","The test takes less than 10 minutes"],2],
+["A teacher gives a written multiple-choice grammar quiz to test speaking skills. Why is this flawed?",["It has low validity because it does not measure speaking","It is too expensive to print","It has high reliability","It gives too much feedback"],0],
+["What does “Reliability” mean when grading an exam?",["The questions are extremely difficult","The test gives consistent and fair results every time","Only one student gets an A+","The teacher grades papers very fast"],1],
+["Which teacher comment is the best example of “Constructive Feedback”?",["Good job! 8/10.","Your grammar is terrible. Study harder.","Great vocabulary, next time use linking words like “however” to connect paragraphs.","You need to be smarter next time."],2],
+["Two teachers grade the exact same essay. Teacher A gives 9/10, and Teacher B gives 5/10. What is missing?",["Validity","Reliability (scorer consistency)","Constructive feedback","Student motivation"],1],
+["Why should a teacher share the rubric with students BEFORE a test starts?",["So students can grade their friends","So students know the exact goals and expectations","To make the test easier to pass","To save time during the exam"],1],
+["A listening test uses a blurry, noisy audio clip that makes it hard to hear. What is affected?",["Reliability, because students have to guess","Feed-forward advice","Holistic grading","Classroom criteria"],0],
+["Which feedback habit actually HURTS student motivation?",["Praising one clear strength first","Giving one simple tip for next time","Correcting every single mistake in red ink","Linking comments to the rubric"],2],
+["When is the best time to give constructive feedback to a student?",["At the very end of the school year","Soon after the task while it is still fresh","Only when the student fails","Before the student starts the task"],1],
+["Why is “Good job! 8/10” considered weak feedback?",["It is too long to read","It does not explain what to improve next time","It uses an analytic rubric","It hurts test validity"],1],
+["If two teachers use a clear, detailed rubric to grade the same test, what happens to their scores?",["They become much more consistent and similar","They become completely random","Every student gets a 10/10","The test loses validity"],0],
+["What are “Assessment Criteria”?",["The specific elements we look for when grading, like grammar or pronunciation","The final letter grade written at the top of the test","The rules for how long students can sit in the classroom","The punishment for failing an exam"],0],
+["What is the main purpose of a “Rubric”?",["To make grading a secret until the end of the year","To show students the exact expectations and levels of performance before they start","To replace the teacher with a computer","To make tests harder to pass"],1],
+["What does “Validity” mean in language assessment?",["The test is printed clearly without typos","The test actually measures what it claims to measure","Every student gets the exact same grade","The test takes less than 15 minutes"],1],
+["According to our presentation, why is giving a written multiple-choice grammar test to measure speaking skills flawed?",["It has low validity because knowing grammar rules does not prove someone can speak","It has low reliability because computers grade it","It takes too long for students to finish","It gives too much feedback"],0],
+["Finish the metaphor from our slides: “To test if someone can swim, you don’t give them a pen and paper—you...”",["Give them a multiple-choice quiz about water","Throw them in the pool","Ask two teachers to grade their swimsuit","Give them a holistic rubric"],1],
+["What does “Reliability” mean in language assessment?",["The test is very difficult","The test gives consistent, stable, and fair results every time","The test measures speaking instead of writing","The teacher gives high grades to everyone"],1],
+["According to our slides, if a student takes the exact same test on Tuesday and Wednesday, what should happen if the test is reliable?",["They should get roughly the same score","They should get a much lower score on Wednesday","The questions should completely change","The teacher should use a different rubric"],0],
+["If two different teachers grade the exact same essay, what proves the grading is reliable?",["They give the exact same mark","One gives an A and the other gives a C","They both write “Good job!” at the bottom","They grade it without using any criteria"],0],
+["Why is writing “Good job! 7/10” considered weak feedback?",["It is too long for the student to read","It does not tell the student how to fix their mistakes next time","It hurts the validity of the test","It uses an analytic rubric"],1],
+["What are the 3 steps of good Constructive Feedback?",["Remind them of the goal, state what they did well, and give one concrete step for next time","Circle every mistake in red, give a grade, and compare them to other students","Give a letter grade, hide the rubric, and move to the next unit","Praise their handwriting, ignore grammar, and give a 10/10"],0],
+["Which of these is the best example of “Feed-forward” (focusing on the future)?",["“You made 10 mistakes on yesterday’s test.”","“Next time, use linking words like however and therefore to connect your paragraphs.”","“Your essay is worse than the rest of the class.”","“Good effort, keep it up!”"],1],
+["In our teacher-student roleplay, what concrete advice did Mr. Davis give Sarah to fix her long pauses during her presentation?",["Memorize the entire speech word-for-word","Write 3 or 4 bullet-point keywords on her note cards instead of full sentences","Speak much faster so nobody notices the pauses","Read directly from her laptop screen"],1],
+["A machine grades a spelling quiz with 100% consistency, and it is used as the final exam for a Speaking class. Which is true?",["It is valid and reliable","It is reliable, but completely invalid","It is valid, but unreliable","It uses an analytic rubric"],1],
+["A teacher grades 50 essays at midnight and grades the last 10 much harsher because she is tired. Which principle is broken?",["Construct validity","Reliability (grader consistency over time)","Feed-forward feedback","Holistic scoring"],1],
+["A reading test uses passages about advanced quantum physics, causing strong English readers to fail due to lack of science knowledge. What is violated?",["Validity (it tests science knowledge instead of reading)","Reliability","Analytic grading","Timely feedback"],0],
+["When grading a persuasive essay, a teacher takes off 40% of the points for messy handwriting. Why is this assessment flawed?",["It hurts validity because handwriting is irrelevant to persuasive writing","It hurts inter-rater reliability","It gives too much feed-forward","It uses holistic scoring"],0]
+];
+const $=id=>document.getElementById(id);
+const COL=["#ff6b6b","#ff9f43","#feca57","#2ed573","#1dd1a1","#48dbfb","#7c9cff","#d68cf5"],BOSS=4,MIN=6;
+let players=[],scores=[],qi=0,locked=false;
+
+function renderSetup(){
+  const ul=$("plist");ul.innerHTML="";
+  players.forEach((p,i)=>{
+    const li=document.createElement("li");
+    li.style.setProperty("--c",COL[i]);const s=document.createElement("span");s.textContent=p;
+    const b=document.createElement("button");b.className="ghost";b.textContent="Remove";
+    b.setAttribute("aria-label","Remove "+p);
+    b.onclick=()=>{players.splice(i,1);renderSetup()};
+    li.append(s,b);ul.append(li);
+  });
+  $("start").disabled=players.length<MIN;
+  $("hint").textContent=players.length<MIN?players.length+" of "+MIN+" added. Add "+(MIN-players.length)+" more to start.":players.length+" players ready.";
+}
+function addPlayer(){
+  const v=$("pname").value.trim();
+  if(!v)return;
+  if(players.length>=8){$("hint").textContent="The maximum is 8 players.";return}
+  if(players.some(p=>p.toLowerCase()===v.toLowerCase())){$("hint").textContent="That name is already taken.";return}
+  players.push(v);$("pname").value="";renderSetup();$("pname").focus();
+}
+$("add").onclick=addPlayer;
+$("pname").onkeydown=e=>{if(e.key==="Enter")addPlayer()};
+
+function show(id){["setup","play","end"].forEach(s=>$(s).classList.toggle("hidden",s!==id))}
+function renderScore(popIdx){
+  const ul=$("score");ul.innerHTML="";
+  players.forEach((p,i)=>{
+    const li=document.createElement("li");
+    li.style.setProperty("--c",COL[i]);
+    if(i===qi%players.length&&qi<Q.length)li.classList.add("active");
+    if(i===popIdx)li.classList.add("pop");
+    const a=document.createElement("span");a.textContent=p;
+    const b=document.createElement("span");b.className="sc";b.textContent=scores[i];
+    li.append(a,b);ul.append(li);
+  });
+}
+function ask(){
+  locked=false;
+  const [t,o]=Q[qi],boss=qi>=Q.length-BOSS,pi=qi%players.length;
+  $("qnum").textContent=(boss?"Boss Level · ":"")+"Question "+(qi+1)+" of "+Q.length;
+  $("qnum").classList.toggle("boss",boss);
+  $("pts").textContent=(boss?100:20)+" points";
+  $("pts").classList.toggle("boss",boss);
+  $("prog").style.width=(qi/Q.length*100)+"%";
+  $("who").textContent="";$("who").style.background=COL[pi];$("who").style.color="#101528";
+  const w=document.createElement("strong");w.textContent=players[pi];
+  $("who").append("Your turn, ",w);
+  $("qtext").textContent=t;
+  $("msg").textContent="";$("msg").style.color="";
+  $("next").classList.add("hidden");
+  const box=$("opts");box.innerHTML="";
+  o.forEach((txt,i)=>{
+    const b=document.createElement("button");b.className="opt";
+    const l=document.createElement("b");l.textContent="ABCD"[i];
+    const s=document.createElement("span");s.textContent=txt;
+    b.append(l,s);b.onclick=()=>answer(i,b);box.append(b);
+  });
+  renderScore();
+}
+function answer(i,btn){
+  if(locked)return;locked=true;
+  const c=Q[qi][2],pi=qi%players.length,pts=qi>=Q.length-BOSS?100:20,btns=[...document.querySelectorAll(".opt")];
+  btns.forEach(b=>b.disabled=true);
+  btns[c].classList.add("ok");
+  let pop=-1;
+  if(i===c){
+    scores[pi]+=pts;pop=pi;
+    $("msg").textContent="Correct! +"+pts+" points";$("msg").style.color="var(--ok)";
+  }else{
+    if(btn)btn.classList.add("bad");
+    $("msg").textContent=i<0?"Time’s up! No points this turn. The correct answer is highlighted.":"Not quite. The correct answer is highlighted.";$("msg").style.color="var(--bad)";
+  }
+  renderScore(pop);
+  $("next").textContent=qi===Q.length-1?"See results":"Next question";
+  $("next").classList.remove("hidden");$("next").focus();
+}
+let tmr;
+function startTimer(){
+  clearInterval(tmr);
+  const end=Date.now()+420000,el=$("timer");
+  const tick=()=>{
+    const s=Math.max(0,Math.ceil((end-Date.now())/1000));
+    el.textContent="Time "+Math.floor(s/60)+":"+String(s%60).padStart(2,"0");
+    el.classList.toggle("low",s<=60);
+    if(s<=0){locked=true;finish()}
+  };
+  tick();tmr=setInterval(tick,250);
+}
+
+$("next").onclick=()=>{qi++;qi>=Q.length?finish():ask()};
+
+function finish(){
+  clearInterval(tmr);
+  show("end");
+  const ranked=players.map((p,i)=>({p,s:scores[i]})).sort((a,b)=>b.s-a.s);
+  const top=ranked.slice(0,3),order=[1,0,2].filter(i=>top[i]);
+  const pod=$("podium");pod.innerHTML="";
+  order.forEach(i=>{
+    const d=document.createElement("div");d.className="step p"+(i+1);
+    const n=document.createElement("div");n.className="name";n.textContent=top[i].p;
+    const s=document.createElement("div");s.className="pts";s.textContent=top[i].s+" pts";
+    const b=document.createElement("div");b.className="block";b.textContent=i+1;
+    d.append(n,s,b);pod.append(d);
+  });
+  $("rest").textContent=ranked.length>3?"Also played: "+ranked.slice(3).map(r=>r.p+" ("+r.s+")").join(", "):"";
+}
+$("start").onclick=()=>{scores=players.map(()=>0);qi=0;show("play");ask();startTimer()};
+$("again").onclick=()=>{show("setup");renderSetup()};
+renderSetup();
+</script>
+</body>
+</html>
